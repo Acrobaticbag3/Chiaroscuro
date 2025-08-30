@@ -2,6 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+    CameraModel. 
+    Stores camera state (position, rotation, zoom).
+    Holds tweakable paramaters (MoveSpeed, ZoomSpeed).
+    Does not know about input or actual camera transform.
+*/
 public class CameraModel : MonoBehaviour {
     // Internal
     [SerializeField] private Vector2 position = Vector2.zero;

@@ -2,6 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+    CameraController.
+    Reads player input (WASD, mouse scroll, Q/E rotation).
+    Updates the CameraModel accordingly.
+    Does not move camera directly.
+*/
 public class CameraController : MonoBehaviour {
     // Internal
     [SerializeField] private CameraModel cameraModel;
