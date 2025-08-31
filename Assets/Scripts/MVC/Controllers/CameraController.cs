@@ -8,7 +8,8 @@ using UnityEngine;
     Updates the CameraModel accordingly.
     Does not move camera directly.
 */
-public class CameraController : MonoBehaviour {
+public class CameraController : MonoBehaviour
+{
     // Internal
     [SerializeField] private CameraModel cameraModel;
     [SerializeField] private float rotationSpeed = 50f; // Since input response, does not belong in model, according to MVC
@@ -20,13 +21,15 @@ public class CameraController : MonoBehaviour {
         HandleRotation();
     }
 
-    private void HandleMovement() {
+    private void HandleMovement()
+    {
         // WASD
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
 
         Vector3 input = new Vector3(horizontal, vertical, 0f);
-        if (input != Vector3.zero) {
+        if (input != Vector3.zero)
+        {
             // Rotate move input to allow for local movement
             float angleRad = cameraModel.Rotation * Mathf.Deg2Rad;
             float cos = Mathf.Cos(angleRad);
@@ -45,19 +48,23 @@ public class CameraController : MonoBehaviour {
         }
     }
 
-    private void HandleZoom() {
+    private void HandleZoom()
+    {
         float scroll = Input.GetAxis("Mouse ScrollWheel");
-        if (Mathf.Abs(scroll) > 0.01f) {
+        if (Mathf.Abs(scroll) > 0.01f)
+        {
             cameraModel.Zoom -= scroll * cameraModel.ZoomSpeed; // Model clamps
         }
     }
 
-    private void HandleRotation() {
+    private void HandleRotation()
+    {
         float rotInput = 0f;
         if (Input.GetKey(KeyCode.Q)) rotInput = -2f;
         if (Input.GetKey(KeyCode.E)) rotInput = 2f;
 
-        if (rotInput != 0) {
+        if (rotInput != 0)
+        {
             float newRot = cameraModel.Rotation + rotInput * rotationSpeed * Time.deltaTime;
             cameraModel.Rotation = newRot;
         }

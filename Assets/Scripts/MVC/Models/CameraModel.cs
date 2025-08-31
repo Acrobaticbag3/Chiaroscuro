@@ -8,7 +8,8 @@ using UnityEngine;
     Holds tweakable paramaters (MoveSpeed, ZoomSpeed).
     Does not know about input or actual camera transform.
 */
-public class CameraModel : MonoBehaviour {
+public class CameraModel : MonoBehaviour
+{
     // Internal
     [SerializeField] private Vector3 position = Vector3.zero;
     [SerializeField] private float rotation = 0f;
@@ -21,17 +22,20 @@ public class CameraModel : MonoBehaviour {
     [SerializeField] private float minZoom = 5f;
 
     // Controlled access
-    public Vector3 Position {
+    public Vector3 Position
+    {
         get => position;
         set => position = value;
     }
 
-    public float Rotation {
+    public float Rotation
+    {
         get => rotation;
         set => rotation = value;
     }
 
-    public float Zoom {
+    public float Zoom
+    {
         get => zoom;
         set => zoom = Mathf.Clamp(value, minZoom, maxZoom);
     }
