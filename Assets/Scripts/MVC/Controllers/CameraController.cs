@@ -13,7 +13,8 @@ public class CameraController : MonoBehaviour {
     [SerializeField] private CameraModel cameraModel;
     [SerializeField] private float rotationSpeed = 50f; // Since input response, does not belong in model, according to MVC
 
-    private void Update() {
+    private void Update()
+    {
         HandleMovement();
         HandleZoom();
         HandleRotation();
@@ -38,7 +39,9 @@ public class CameraController : MonoBehaviour {
                 0f
             );
 
-            cameraModel.Position += rotatedInput * cameraModel.MoveSpeed * Time.deltaTime;
+            float speed = cameraModel.MoveSpeed;
+            if (Input.GetKey(KeyCode.LeftShift)) speed *= 3f;
+            cameraModel.Position += rotatedInput * speed * Time.deltaTime;
         }
     }
 

@@ -20,8 +20,22 @@ public class CameraView : MonoBehaviour {
         float rot = cameraModel.Rotation;
 
         // y --> zoom, x/z --> model pos
-        cameraTransform.position = new Vector3(pos.x, pos.y, -10f);
-        cameraTransform.rotation = Quaternion.Euler(0f, 0f, cameraModel.Rotation);
-        cam.orthographicSize = cameraModel.Zoom;
+        cameraTransform.position = Vector3.Lerp(
+            cameraTransform.position,
+            new Vector3(pos.x, pos.y, -10f),
+            Time.deltaTime * 5f
+        );
+
+        cameraTransform.rotation = Quaternion.Lerp(
+            cameraTransform.rotation,
+            Quaternion.Euler(0f, 0f, cameraModel.Rotation),
+            Time.deltaTime * 5f
+        );
+
+        cam.orthographicSize = Mathf.Lerp(
+            cam.orthographicSize,
+            cameraModel.Zoom,
+            Time.deltaTime
+        );
     }
 }
