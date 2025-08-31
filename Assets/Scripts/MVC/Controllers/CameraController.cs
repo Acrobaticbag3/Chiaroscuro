@@ -26,8 +26,19 @@ public class CameraController : MonoBehaviour {
 
         Vector3 input = new Vector3(horizontal, vertical, 0f);
         if (input != Vector3.zero) {
-            Vector3 newPos = cameraModel.Position + input * cameraModel.MoveSpeed * Time.deltaTime;
-            cameraModel.Position = newPos;
+            // Rotate move input to allow for local movement
+            float angleRad = cameraModel.Rotation * Mathf.Deg2Rad;
+            float cos = Mathf.Cos(angleRad);
+            float sin = Mathf.Sin(angleRad);
+
+            // Apply 2D rotation to input vector
+            Vector3 rotatedInput = new Vector3(
+                input.x * cos - input.y * sin,
+                input.x * sin + input.y * cos,
+                0f
+            );
+
+            cameraModel.Position += rotatedInput * cameraModel.MoveSpeed * Time.deltaTime;
         }
     }
 

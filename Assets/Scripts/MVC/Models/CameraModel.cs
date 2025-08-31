@@ -36,7 +36,7 @@ public class CameraModel : MonoBehaviour {
         set => zoom = Mathf.Clamp(value, minZoom, maxZoom);
     }
 
-    // Read only --> Potential later use, maybe remove??
+    // Read only
     public float MoveSpeed => moveSpeed;
     public float ZoomSpeed => zoomSpeed;
     public float MaxZoom => maxZoom;

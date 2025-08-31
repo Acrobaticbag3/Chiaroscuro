@@ -9,6 +9,9 @@ using UnityEngine;
 public class CameraView : MonoBehaviour {
     [SerializeField] private CameraModel cameraModel;
     [SerializeField] private Transform cameraTransform;
+    private Camera cam;
+
+    private void Awake() => cam = cameraTransform.GetComponent<Camera>();
 
     private void LateUpdate() {
         // Does not break MVC as we're only reading from model.
@@ -19,6 +22,6 @@ public class CameraView : MonoBehaviour {
         // y --> zoom, x/z --> model pos
         cameraTransform.position = new Vector3(pos.x, pos.y, -10f);
         cameraTransform.rotation = Quaternion.Euler(0f, 0f, cameraModel.Rotation);
-        cameraTransform.GetComponent<Camera>().orthographicSize = cameraModel.Zoom;
+        cam.orthographicSize = cameraModel.Zoom;
     }
 }
