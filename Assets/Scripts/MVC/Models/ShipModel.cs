@@ -5,15 +5,18 @@ using UnityEngine;
 public class ShipModel : MonoBehaviour
 {
     // Internals
-    private Vector2 position;
-    private bool isSelected = false;
-    public int groupId = -1;
-    private Vector2 targetPosition;
+    [Header("State")]
+    [SerializeField] private bool isSelected = false;
+    [SerializeField] public int groupId = -1;
+    [SerializeField] private Vector2 targetPosition;
+
+    [Header("Role")]
+    public MonoBehaviour behaviourComponent;
 
     public Vector2 Position
     {
         get => transform.position;  // flatten to Vector2
-        set => transform.position = value;
+        set => transform.position = new Vector3(value.x, value.y, transform.position.z);
     }
 
     public bool IsSelected
@@ -33,6 +36,8 @@ public class ShipModel : MonoBehaviour
         get => targetPosition;
         set => targetPosition = value;
     }
+
+    public IShipBehaviour Behavior => behaviourComponent as IShipBehaviour;
 
     public void Awake()
     {
