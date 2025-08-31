@@ -24,9 +24,9 @@ public class CameraController : MonoBehaviour {
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
 
-        Vector2 input = new Vector2(horizontal, vertical);
-        if (input != Vector2.zero) {
-            Vector2 newPos = cameraModel.Position + input * cameraModel.MoveSpeed * Time.deltaTime;
+        Vector3 input = new Vector3(horizontal, vertical, 0f);
+        if (input != Vector3.zero) {
+            Vector3 newPos = cameraModel.Position + input * cameraModel.MoveSpeed * Time.deltaTime;
             cameraModel.Position = newPos;
         }
     }
@@ -34,15 +34,14 @@ public class CameraController : MonoBehaviour {
     private void HandleZoom() {
         float scroll = Input.GetAxis("Mouse ScrollWheel");
         if (Mathf.Abs(scroll) > 0.01f) {
-            float newZoom = cameraModel.Zoom - scroll * cameraModel.ZoomSpeed * 10f; // Multiply zoom by arbitrary numb till it feel right
-            cameraModel.Zoom = newZoom; // Model clamps
+            cameraModel.Zoom -= scroll * cameraModel.ZoomSpeed; // Model clamps
         }
     }
 
     private void HandleRotation() {
         float rotInput = 0f;
-        if (Input.GetKey(KeyCode.Q)) rotInput = -1f;
-        if (Input.GetKey(KeyCode.E)) rotInput = 1f;
+        if (Input.GetKey(KeyCode.Q)) rotInput = -2f;
+        if (Input.GetKey(KeyCode.E)) rotInput = 2f;
 
         if (rotInput != 0) {
             float newRot = cameraModel.Rotation + rotInput * rotationSpeed * Time.deltaTime;

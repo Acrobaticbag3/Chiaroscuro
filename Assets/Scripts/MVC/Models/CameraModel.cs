@@ -10,18 +10,18 @@ using UnityEngine;
 */
 public class CameraModel : MonoBehaviour {
     // Internal
-    [SerializeField] private Vector2 position = Vector2.zero;
+    [SerializeField] private Vector3 position = Vector3.zero;
     [SerializeField] private float rotation = 0f;
     [SerializeField] private float zoom = 2f;
 
     // Tweakable
     [SerializeField] private float moveSpeed = 10f;
-    [SerializeField] private float zoomSpeed = 5f;
-    [SerializeField] private float maxZoom = 20f;
-    [SerializeField] private float minZoom = 2f;
+    [SerializeField] private float zoomSpeed = 10f;
+    [SerializeField] private float maxZoom = 20;
+    [SerializeField] private float minZoom = 5f;
 
     // Controlled access
-    public Vector2 Position {
+    public Vector3 Position {
         get => position;
         set => position = value;
     }
