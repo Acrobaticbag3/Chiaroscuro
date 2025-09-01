@@ -9,18 +9,21 @@ public class ShipMover : MonoBehaviour
 
     private ShipModel shipModel;
 
-    void Awake() => shipModel = GetComponent<ShipModel>();
+    void Awake()
+    {
+        shipModel = GetComponent<ShipModel>();
+        shipModel.TargetPosition = transform.position;
+    }
 
     void Update()
     {
-        Vector2 pos = model.Position;
-        Vector2 target = model.TargetPosition;
+        Vector2 pos = shipModel.Position;
+        Vector2 target = shipModel.TargetPosition;
 
         if ((pos - target).sqrMagnitude > arriveDistance * arriveDistance)
         {
-            Vector2 dir = (target - pos).normalized;
-            pos += dir * moveSpeed * Time.deltaTime;
-            model.Position = pos;
+            pos = Vector2.MoveTowards(pos, target, moveSpeed * Time.deltaTime);
+            shipModel.Position = pos;
         }
     }
 }
