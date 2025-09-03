@@ -52,7 +52,7 @@ public class FleetManager : MonoBehaviour
             unVisited.Remove(seed);
 
             // BFS-like cluster
-            var group = new FleetGroup { FleedId = fleetId++ };
+            var group = new FleetGroup { FleetId = fleetId++ };
             var queue = new Queue<ShipModel>();
             queue.Enqueue(seed);
 

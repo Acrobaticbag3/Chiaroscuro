@@ -40,30 +40,39 @@ public class InputController : MonoBehaviour
 
             if (fleetMode)
             {
-                // fleet ring selection
+                // Fleet ring selection
                 Vector2 world = mainCamera.ScreenToWorldPoint(Input.mousePosition);
                 DeselectAllShips();
+
+                var oldFleet = selectedFleet;
                 selectedFleet = fleetManager.TryPickFleet(world);
+
                 if (selectedFleet != null)
                 {
+                    if (oldFleet != null)
+                    {
+                        oldFleet.IsSelected = false;
+                        oldFleet.UpdateGeometry();
+                    }
+
                     selectedFleet.IsSelected = true;
                     selectedFleet.UpdateGeometry();
                 }
+                else if (oldFleet != null)
+                {
+                    oldFleet.IsSelected = false;
+                    oldFleet.UpdateGeometry();
+                    selectedFleet = null;
+                }
                 else
                 {
-                    // Click empty space --> clear fleet selection
-                    if (selectedFleet != null)
-                    {
-                        selectedFleet.IsSelected = false;
-                        selectedFleet.UpdateGeometry();
-                    }
                     selectedFleet = null;
                 }
             }
         }
-        else
+        else if (dragging)
         {
-            // Box select ships
+            // Box select
             Rect r = GetScreenRect(dragStart, Input.mousePosition);
             bool addToSelection = Input.GetKey(KeyCode.LeftShift);
 
@@ -72,7 +81,9 @@ public class InputController : MonoBehaviour
 
             foreach (var ship in ShipManager.AllShips)
             {
+                // WorldToScreenPoint gives bottom-left origin coords (0,0 = bottom left)
                 Vector2 screenPos = mainCamera.WorldToScreenPoint(ship.Position);
+
                 if (r.Contains(screenPos))
                 {
                     ship.IsSelected = true;
@@ -86,26 +97,29 @@ public class InputController : MonoBehaviour
         if (!Input.GetMouseButtonDown(1)) return;
 
         Vector2 world = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-        bool fleetMode = mainCamera.orthographicSize >= fleetZoomThreshold;
 
-        if (fleetMode && selectedFleet != null)
+        if (selectedFleet != null)
         {
             selectedFleet.ExecuteFleetOrder(world);
         }
         else
         {
             foreach (var ship in ShipManager.AllShips)
+            {
                 if (ship.IsSelected)
                 {
-                    // Delegate to own behaviour
-                    if (ship.Behavior != null) ship.Behavior.ExecuteOrder(ship, world);
-                    else ship.TargetPosition = world;
+                    if (ship.Behavior != null) 
+                        ship.Behavior.ExecuteOrder(ship, world);
+                    else 
+                        ship.TargetPosition = world;
                 }
+            }
         }
     }
 
     private Rect GetScreenRect(Vector2 start, Vector2 end)
     {
+        // Builds a rect in bottom-left origin space (same as WorldToScreenPoint)
         Vector2 bl = new(Mathf.Min(start.x, end.x), Mathf.Min(start.y, end.y));
         Vector2 size = new(Mathf.Abs(start.x - end.x), Mathf.Abs(start.y - end.y));
         return new Rect(bl, size);
@@ -117,11 +131,9 @@ public class InputController : MonoBehaviour
     }
 
     // === === === === === === === === === === === === === === === === === \\
-    // === === === move to view layer once prototyping is done === === === \\
+    // === === === === === OnGUI only affects visuals  === === === === === \\
     // === === === === === === === === === === === === === === === === === \\
 
-    // Draw selection
-    // IMGUI for quick prototyping, replace later, probably
     private void OnGUI()
     {
         if (!dragging) return;
@@ -129,10 +141,9 @@ public class InputController : MonoBehaviour
         Rect r = GetScreenRect(dragStart, Input.mousePosition);
         if (r.width < 2f || r.height < 2f) return;
 
-        // Flip
+        // Convert rect into top-left origin space for IMGUI drawing
         r.y = Screen.height - r.y - r.height;
 
-        // Draw box, move to view layer once prototyping done
         Color c = new Color(0.2f, 0.8f, 1f, 0.15f);
         Color b = new Color(0.2f, 0.8f, 1f, 0.8f);
 
@@ -140,7 +151,7 @@ public class InputController : MonoBehaviour
         DrawRectOutline(r, 2f, b);
     }
 
-    // Quick IMGUI helpers
+    // === Quick IMGUI helpers ===
     private static Texture2D _tex;
     private static Texture2D WhiteTex => _tex ??= new Texture2D(1, 1);
 

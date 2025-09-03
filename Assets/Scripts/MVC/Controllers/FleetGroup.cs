@@ -12,7 +12,7 @@ public class FleetGroup
 
     [SerializeField] public FleetRingView ringView;
 
-    public int FleedId
+    public int FleetId
     {
         get => fleetId;
         set => fleetId = value;
