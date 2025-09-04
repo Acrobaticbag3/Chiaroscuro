@@ -77,7 +77,10 @@ public class FleetManager : MonoBehaviour
                 }
             }
 
-            // Skip singelton groups????
+            // Single ships should not make a fleet
+            if (group.Members.Count <= 1)
+                continue;
+
             // Rink view
             var ring = Instantiate(ringPrefab);
             group.ringView = ring;
