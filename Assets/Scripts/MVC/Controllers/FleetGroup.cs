@@ -73,4 +73,15 @@ public class FleetGroup
             else member.TargetPosition = target;    // Fallback in case of no defined behaviour
         }
     }
+
+    public void SetSelected(bool selected)
+    {
+        isSelected = selected;
+
+        // Propagate ships 
+        foreach (var member in members)
+            member.IsSelected = selected;
+        
+        ringView?.SetCircle(center, radius, selected);
+    }
 }

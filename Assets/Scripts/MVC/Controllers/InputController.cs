@@ -36,60 +36,79 @@ public class InputController : MonoBehaviour
         if (Input.GetMouseButtonUp(0))
         {
             dragging = false;
-            bool fleetMode = mainCamera.orthographicSize >= fleetZoomThreshold;
 
+            Vector2 mousePos = Input.mousePosition;
+            Vector2 world = mainCamera.ScreenToWorldPoint(mousePos);
+            float dragDistance = (dragStart - mousePos).magnitude;
+            bool fleetMode = mainCamera.orthographicSize >= fleetZoomThreshold;
+            bool addToSelection = Input.GetKey(KeyCode.LeftShift);
+
+            // === CASE 1: Fleet Selection ===
             if (fleetMode)
             {
-                // Fleet ring selection
-                Vector2 world = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-                DeselectAllShips();
-
                 var oldFleet = selectedFleet;
                 selectedFleet = fleetManager.TryPickFleet(world);
 
-                if (selectedFleet != null)
+                // Deselect old
+                if (oldFleet != selectedFleet)
                 {
-                    if (oldFleet != null)
-                    {
-                        oldFleet.IsSelected = false;
-                        oldFleet.UpdateGeometry();
-                    }
+                    oldFleet?.SetSelected(false);
+                    if (!addToSelection) DeselectAllShips();
+                }
 
-                    selectedFleet.IsSelected = true;
-                    selectedFleet.UpdateGeometry();
-                }
-                else if (oldFleet != null)
+                selectedFleet?.SetSelected(true);
+
+                // In fleet ship selection
+                if (selectedFleet != null && !addToSelection)
                 {
-                    oldFleet.IsSelected = false;
-                    oldFleet.UpdateGeometry();
-                    selectedFleet = null;
-                }
-                else
-                {
-                    selectedFleet = null;
+                    DeselectAllShips();
+                    foreach (var ship in selectedFleet.Members)
+                        ship.IsSelected = true;
                 }
             }
-        }
-        else if (dragging)
-        {
-            // Box select
-            Rect r = GetScreenRect(dragStart, Input.mousePosition);
-            bool addToSelection = Input.GetKey(KeyCode.LeftShift);
-
-            if (!addToSelection) DeselectAllShips();
-            selectedFleet = null;
-
-            foreach (var ship in ShipManager.AllShips)
+            // === CASE 2: Single Click Selection ===
+            else if (dragDistance < 2f)
             {
-                // WorldToScreenPoint gives bottom-left origin coords (0,0 = bottom left)
-                Vector2 screenPos = mainCamera.WorldToScreenPoint(ship.Position);
+                if (!addToSelection) DeselectAllShips();
+                selectedFleet = null;
 
-                if (r.Contains(screenPos))
+                ShipModel clicked = TryPickClosestShip(world, 0.5f);
+                if (clicked != null)
+                    clicked.IsSelected = true;
+            }
+            // === CASE 3: Box Selection ===
+            else
+            {
+                if (!addToSelection) DeselectAllShips();
+                selectedFleet = null;
+
+                Rect r = GetScreenRect(dragStart, mousePos);
+                foreach (var ship in ShipManager.AllShips)
                 {
-                    ship.IsSelected = true;
+                    Vector2 screenPos = mainCamera.WorldToScreenPoint(ship.Position);
+                    if (r.Contains(screenPos))
+                        ship.IsSelected = true;
                 }
             }
         }
+    }
+
+    // Pixed to pick the closest ship
+    private ShipModel TryPickClosestShip(Vector2 worldPoint, float radius)
+    {
+        ShipModel closest = null;
+        float closestSqr = radius * radius;
+
+        foreach (var ship in ShipManager.AllShips)
+        {
+            float sqr = (ship.Position - worldPoint).sqrMagnitude;
+            if (sqr <= closestSqr)
+            {
+                closestSqr = sqr;
+                closest = ship;
+            }
+        }
+        return closest;
     }
 
     private void HandleRightMouse()
@@ -108,9 +127,9 @@ public class InputController : MonoBehaviour
             {
                 if (ship.IsSelected)
                 {
-                    if (ship.Behavior != null) 
+                    if (ship.Behavior != null)
                         ship.Behavior.ExecuteOrder(ship, world);
-                    else 
+                    else
                         ship.TargetPosition = world;
                 }
             }
